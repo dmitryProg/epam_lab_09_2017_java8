@@ -28,7 +28,7 @@ public class CollectorsExample {
         Integer collect6 = range.boxed().collect(Collectors.summingInt(value -> value));
         IntSummaryStatistics collect7 = range.boxed().collect(Collectors.summarizingInt(value -> value));
         String collect8 = Stream.of("a", "b", "c").collect(Collectors.joining());
-           String collect9 = Stream.of("a", "b", "c").collect(Collectors.joining(" "));
+        String collect9 = Stream.of("a", "b", "c").collect(Collectors.joining(" "));
         String collect10 = Stream.of("a", "b", "c").collect(Collectors.joining(" ", "->", "<-"));
     }
 }

@@ -6,15 +6,48 @@ import data.Person;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CollectorsExercise1 {
 
-    private static class PersonPositionDuration {
+    private static class PairOfPersonEmployer {
+        private final String person;
+        private final String employer;
+
+        public PairOfPersonEmployer(String employer, String person) {
+            this.employer = employer;
+            this.person = person;
+        }
+
+        public String getPerson() {
+            return person;
+        }
+
+        public String getEmployer() {
+            return employer;
+        }
+    }
+
+    // "epam" -> "Alex Ivanov 23, Semen Popugaev 25, Ivan Ivanov 33"
+    @Test
+    public void getEmployeesByEmployer() {
+        Map<String, String> result = getEmployees().stream()
+                .flatMap(e -> e.getJobHistory().stream()
+                        .map(JobHistoryEntry::getEmployer)
+                        .map(employer -> new PairOfPersonEmployer(employer, e.getPerson().toString())))
+                .collect(Collectors.
+                        groupingBy(PairOfPersonEmployer::getEmployer,
+                                Collectors.
+                                        mapping(PairOfPersonEmployer::getPerson, Collectors.joining(", "))));
+
+    }
+
+    private static class PairOfPersonPositionDuration {
         private final Person person;
         private final String position;
         private final int duration;
 
-        public PersonPositionDuration(Person person, String position, int duration) {
+        public PairOfPersonPositionDuration(Person person, String position, int duration) {
             this.person = person;
             this.position = position;
             this.duration = duration;
@@ -33,14 +66,6 @@ public class CollectorsExercise1 {
         }
     }
 
-
-    // "epam" -> "Alex Ivanov 23, Semen Popugaev 25, Ivan Ivanov 33"
-    @Test
-    public void getEmployeesByEmployer() {
-        Map<String, String> result = null;
-
-    }
-
     @Test
     public void getTheCoolestOne() {
         Map<String, Person> coolestByPosition = getCoolestByPosition(getEmployees());
@@ -57,8 +82,20 @@ public class CollectorsExercise1 {
         // Second option
         // Collectors.toMap
         // iterate twice: stream...collect(...).stream()...
-        // TODO
-        throw new UnsupportedOperationException();
+        return getEmployees().stream()
+                .flatMap(e -> e.getJobHistory().stream()
+                        .collect(Collectors.
+                                groupingBy(JobHistoryEntry::getPosition, Collectors.summingInt(JobHistoryEntry::getDuration)))
+                        .entrySet()
+                        .stream()
+                        .map(pair -> new PairOfPersonPositionDuration(e.getPerson(), pair.getKey(), pair.getValue())))
+                .collect(Collectors
+                        .groupingBy(PairOfPersonPositionDuration::getPosition,
+                                Collectors
+                                        .collectingAndThen(Collectors
+                                                        .maxBy(Comparator.comparing(PairOfPersonPositionDuration::getDuration)),
+                                                elem -> elem.get().getPerson())));
+
     }
 
     private List<Employee> getEmployees() {
