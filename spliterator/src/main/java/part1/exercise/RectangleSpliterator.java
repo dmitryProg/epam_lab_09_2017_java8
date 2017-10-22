@@ -19,7 +19,6 @@ public class RectangleSpliterator extends Spliterators.AbstractIntSpliterator {
 //                          | Spliterator.SUBSIZED
 //                          | Spliterator.NONNULL);
         this(array, 0, checkArrayAndCalcEstimatedSize(array));
-
     }
 
     private RectangleSpliterator(int[][] array, long startInclusive, long endExclusive) {
@@ -46,6 +45,7 @@ public class RectangleSpliterator extends Spliterators.AbstractIntSpliterator {
         if (length < 2) {
             return null;
         }
+
         long midValue = startInclusive + length / 2;
         RectangleSpliterator result = new RectangleSpliterator(array, startInclusive, midValue);
         startInclusive = midValue;
@@ -65,6 +65,7 @@ public class RectangleSpliterator extends Spliterators.AbstractIntSpliterator {
             action.accept(value);
             return true;
         }
+
         return false;
     }
 }
