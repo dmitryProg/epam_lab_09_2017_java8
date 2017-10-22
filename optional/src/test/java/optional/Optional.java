@@ -1,17 +1,24 @@
 package optional;
 
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 public class Optional<T> {
     private final T value;
-    private final Optional<?> EMPTY = new Optional<java.lang.Object>();//типизирован обджектом без вопроса
+    private final static Optional<?> EMPTY = new Optional<>();
 
     private Optional(T value){
-        this.value = Objects.requireNotNull(value);;
+        this.value = Objects.requireNotNull(value);
     }
 
     public static <T> Optional<T> of(T value){
-
         return new Optional<>(value);
     }
+
     public static <T> Optional<T> empty(){
         return (Optional<T>) EMPTY;
     }
@@ -32,8 +39,9 @@ public class Optional<T> {
 
     public T get(){
         if (!isPresent()) {
-            throw new NoSuchElementException("Haven't value");
+            throw new NoSuchElementException("This value is absent");
         }
+        return value;
     }
 
     public T orElse(T defaultValue){
@@ -71,7 +79,7 @@ public class Optional<T> {
 
     public <R> Optional<R> flatMap(Function<? super T, ? extends R> function) {
         if (isPresent()) {
-            return mapper.
+            return mapper.apply(value);
         } else {
             return empty();
         }
